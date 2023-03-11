@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup as BS
@@ -9,15 +10,18 @@ import utils
 dir = 'output'
 
 def run(url):
-  # print('page download started')
-  # os.makedirs(dir, exist_ok=True)
-  # subprocess.run(
-  #   f'wget {url} --header "user-agent: me" -r -l 1 -np -nH -k -m -P output --no-clobber',
-  #   text = True,
-  #   shell = True
-  # )
-  # print('page download finished')
-  translate_files('res', 'res')
+  print('page download started')
+  os.makedirs(dir, exist_ok=True)
+  try:
+    subprocess.run(
+      f'wget {url} --header "user-agent: me" -r -l 1 -np -nH -k -m -P output --no-clobber --html-extension',
+      text = True,
+      shell = True
+    )
+  except KeyboardInterrupt:
+    pass
+  print('page download finished')
+  translate_files('output', 'res')
 
 def translate_files(dir, out):
   items = Path(dir).iterdir()
@@ -52,5 +56,6 @@ def translate_files(dir, out):
     path = item.as_posix().replace(dir, out)
     translate_files(item.as_posix(), path)
 
-
-run('https://www.classcentral.com/')
+if __name__ == "__main__":
+  urls = sys.argv[1:]
+  run(' '.join(urls))
